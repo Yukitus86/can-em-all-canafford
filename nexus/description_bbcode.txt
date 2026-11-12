@@ -1,0 +1,54 @@
+[center][size=5][b]CanAfford[/b][/size]
+[size=3]Every skill you can buy [b]right now[/b] lights up in the skill tree.[/size][/center]
+
+[b]No more searching the whole tree.[/b] CanAfford marks every skill you can afford at this moment:
+[list]
+[*][b]Neon green[/b] node with a [b]red border[/b]
+[*]The [b]price[/b] in the middle instead of the icon – $850, $1,000, $25K, $1.5M
+[*]Gently pulsing, so you spot it even when zoomed out
+[*]Updates [b]live[/b] when your money changes or you buy a skill
+[/list]
+"Can buy right now" means: not bought yet, all required skills bought, and the price is not higher than your current money – exactly the game's own rules.
+
+Only the look of the skill tree changes – [b]your save is never touched[/b]. Turn it off anytime with [b]F7[/b].
+
+[size=4][b]Requirements[/b][/size]
+[list]
+[*][url=https://github.com/LavaGang/MelonLoader/releases]MelonLoader 0.7.3 or newer[/url] (x64)
+[*]Can 'Em All (Steam, full game)
+[/list]
+
+[size=4][b]Installation[/b][/size]
+[list=1]
+[*]Install [b]MelonLoader[/b]: download MelonLoader.Installer.exe, select [b]Can 'Em All.exe[/b] (Steam → right-click the game → Manage → Browse local files) and click Install.
+[*]Start the game once and let MelonLoader set itself up (console window, about a minute). Quit.
+[*]Unzip the download and copy [b]CanAfford.dll[/b] into the game's [b]Mods[/b] folder.
+[*]Start the game – the MelonLoader console shows [b]CanAfford loaded[/b].
+[/list]
+Uninstall: delete [b]Mods\CanAfford.dll[/b].
+
+[size=4][b]Keys[/b][/size]
+[list]
+[*][b]F7[/b] – marking on / off
+[*][b]F8[/b] – writes the list of affordable skills to the MelonLoader console
+[/list]
+
+[size=4][b]Settings[/b][/size]
+After the first start: [b]UserData\MelonPreferences.cfg[/b] in the game folder, section [b][CanAfford][/b]. Changes apply [b]live[/b] while the game runs.
+[list]
+[*][b]FillColor[/b] (#39FF14), [b]PriceColor[/b] (#0B1A0B), [b]BorderColor[/b] (#FF1A1A)
+[*][b]ShowPrice[/b], [b]Border[/b], [b]Pulse[/b] – on/off
+[*][b]PriceSize[/b] (0.62), [b]BorderSize[/b] (0.08)
+[*][b]PermanentUpgrades[/b] – also color affordable prestige upgrades
+[/list]
+
+[size=4][b]AI disclosure[/b][/size]
+The mod's code was written with an AI assistant (Claude) under my direction: I defined what it should do and how it should look, tested every version in the game and gave the feedback for each change. The screenshots are real in-game screenshots. The full source code is public on GitHub.
+
+[size=4][b]Links[/b][/size]
+[list]
+[*][url=https://github.com/Yukitus86/can-em-all-canafford]Source code (GitHub)[/url]
+[*][url=https://steamcommunity.com/sharedfiles/filedetails/?id=3838187911]Steam guide[/url]
+[/list]
+
+[i]Unofficial fan mod, not affiliated with LuisDev. Tested with game build 26596503 (Unity 6000.2.15f1) and MelonLoader 0.7.3.[/i]

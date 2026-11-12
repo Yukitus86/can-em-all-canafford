@@ -126,6 +126,7 @@ Leave a comment or open an issue on GitHub – I'll update it.
 
 [h2]Links[/h2]
 [url=https://github.com/Yukitus86/can-em-all-canafford]Source code & download (GitHub)[/url]
+[url=https://www.nexusmods.com/canemall/mods/3]Download on Nexus Mods[/url]
 [url=https://steamcommunity.com/sharedfiles/filedetails/?id=3838055041]Can 'Em All Save Editor (my other tool)[/url]
 
 Found a bug or have an idea? Leave a comment below or open an issue on GitHub.

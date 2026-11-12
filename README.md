@@ -17,7 +17,7 @@
 </p>
 
 <p align="center">
-  <a href="../../releases/latest"><b>⬇ Download CanAfford</b></a> · <a href="https://steamcommunity.com/sharedfiles/filedetails/?id=3838187911">Steam guide</a> · <a href="https://github.com/Yukitus86/can-em-all-savegame-editor">Savegame editor</a>
+  <a href="../../releases/latest"><b>⬇ Download CanAfford</b></a> · <a href="https://www.nexusmods.com/canemall/mods/3">Nexus Mods</a> · <a href="https://steamcommunity.com/sharedfiles/filedetails/?id=3838187911">Steam guide</a> · <a href="https://github.com/Yukitus86/can-em-all-savegame-editor">Savegame editor</a>
 </p>
 
 <p align="center">
