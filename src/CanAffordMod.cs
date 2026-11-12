@@ -12,7 +12,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
-[assembly: MelonInfo(typeof(CanAfford.CanAffordMod), "CanAfford", "1.5.2", "Yukitus")]
+[assembly: MelonInfo(typeof(CanAfford.CanAffordMod), "CanAfford", "1.5.3", "Yukitus")]
 [assembly: MelonGame("LuisDev", "Can 'Em All")]
 
 namespace CanAfford
@@ -54,7 +54,7 @@ namespace CanAfford
         internal static bool UseFill = true, UseOutline;
         internal static int SettingsVersion; // bumped on every (re)load so labels restyle
 
-        static string _cfgPath, _dumpTrigger;
+        static string _cfgPath, _dumpTrigger, _nodesTrigger;
         static DateTime _cfgTime;
         static float _nextPoll;
 
@@ -88,6 +88,7 @@ namespace CanAfford
             string ud = MelonEnvironment.UserDataDirectory;
             _cfgPath = Path.Combine(ud, "MelonPreferences.cfg");
             _dumpTrigger = Path.Combine(ud, "CanAfford_dump.txt");
+            _nodesTrigger = Path.Combine(ud, "CanAfford_nodes_trigger.txt");
             _cfgTime = SafeTime(_cfgPath);
 
             ParseSettings();
@@ -156,6 +157,11 @@ namespace CanAfford
                     Highlighter.Dump();
                     Highlighter.DumpHierarchy();
                 }
+                if (File.Exists(_nodesTrigger))
+                {
+                    File.Delete(_nodesTrigger);
+                    Highlighter.DumpNodes();
+                }
             }
             catch (Exception e) { Log.Warning("Settings poll: " + e.Message); }
         }
@@ -181,7 +187,7 @@ namespace CanAfford
             public RectTransform BorderRef; // what the border is sized around (node root or background)
         }
 
-        static bool _hierarchyLogged;
+        static readonly HashSet<string> _layoutLogged = new();
 
         // key = native pointer of the SkillNode / PermanentUpgrade
         static readonly Dictionary<IntPtr, Mark> Marks = new();
@@ -210,10 +216,32 @@ namespace CanAfford
         {
             var skill = node.skill;
             if (skill == null || skill.isPurchased) return false;
-            if (node.IsLockedForDemo()) return false;
-            if (!node.AreRequirementsMet()) return false;
             long money = Money;
-            return money != long.MinValue && skill.price <= money;
+            if (money == long.MinValue || skill.price > money) return false;
+            // the game's own lock state. NOT IsLockedForDemo(): that one still reports the old demo
+            // limits (true for most nodes >= $200K) although the full game lets you buy them.
+            if (node.IsLocked || node.IsDemoLocked) return false;
+            if (!node.AreRequirementsMet()) return false;
+            return IsAvailable(node);
+        }
+
+        static bool _availBroken;
+
+        /// <summary>SkillTreeView.IsNodeAvailable (covers special nodes like the Master Key); falls back to true.</summary>
+        static bool IsAvailable(SkillNode node)
+        {
+            if (_availBroken) return true;
+            try
+            {
+                var view = node.skillTreeView;
+                return view == null || view.IsNodeAvailable(node);
+            }
+            catch (Exception e)
+            {
+                _availBroken = true;
+                CanAffordMod.Log.Warning("IsNodeAvailable not usable, using lock state only: " + e.Message);
+                return true;
+            }
         }
 
         internal static bool CanAfford(PermanentUpgrade up) =>
@@ -281,7 +309,7 @@ namespace CanAfford
                     {
                         if (m.LabelStyle != CanAffordMod.SettingsVersion)
                         {
-                            StyleLabel(m.Label, bg);
+                            StyleLabel(m.Label, bg, owner.transform);
                             m.LabelStyle = CanAffordMod.SettingsVersion;
                             m.LabelPrice = -1;
                         }
@@ -348,9 +376,9 @@ namespace CanAfford
         /// </summary>
         static Image CreateBorder(Transform root, Image bg, Mark m)
         {
-            if (!_hierarchyLogged)
+            string shape = bg.sprite != null ? bg.sprite.name : "-";
+            if (_layoutLogged.Add(shape))
             {
-                _hierarchyLogged = true;
                 try
                 {
                     var sb = new StringBuilder();
@@ -365,7 +393,8 @@ namespace CanAfford
             // container + index so the border renders before (= behind) all of the node's graphics
             Transform container = bgIsRoot ? root.parent : root;
             if (container == null) return null;
-            m.BorderRef = (!bgIsRoot && rootRt != null && rootRt.rect.width > 1f) ? rootRt : bg.rectTransform;
+            // around the visible shape: the background (diamond nodes have a background bigger than the node)
+            m.BorderRef = bg.rectTransform;
 
             var go = new GameObject("CanAffordBorder");
             var rt = go.AddComponent<RectTransform>();
@@ -449,15 +478,25 @@ namespace CanAfford
             return tmp;
         }
 
-        static void StyleLabel(TextMeshProUGUI tmp, Image bg)
+        static void StyleLabel(TextMeshProUGUI tmp, Image bg, Transform root)
         {
             var font = GameFont();
             if (font != null) tmp.font = font;
             if (_fontMat != null && font == _font) tmp.fontSharedMaterial = _fontMat;
 
+            // size from the node itself, not from the background: diamond nodes have a background
+            // much bigger than the node, which made their price far too large
             var r = bg.rectTransform.rect;
+            float size = Mathf.Min(r.width, r.height);
+            var rootRt = root != null ? root.TryCast<RectTransform>() : null;
+            if (rootRt != null && rootRt.Pointer != bg.rectTransform.Pointer && rootRt.rect.width > 1f)
+            {
+                float bs = bg.rectTransform.lossyScale.x;
+                float rs = bs != 0f ? rootRt.rect.width * rootRt.lossyScale.x / bs : 0f;
+                if (rs > 1f) size = Mathf.Min(size, rs);
+            }
             float k = Mathf.Clamp(CanAffordMod.PriceSize.Value, 0.3f, 0.9f);
-            float w = r.width * k, h = r.height * k * 0.6f;
+            float w = size * k, h = size * k * 0.6f;
             tmp.rectTransform.sizeDelta = new Vector2(w, h);
 
             tmp.alignment = TextAlignmentOptions.CenterGeoAligned; // centered on the glyphs, not the line box
@@ -496,6 +535,61 @@ namespace CanAfford
                   .Append(" price ").Append(up.skill.price).AppendLine();
             }
             CanAffordMod.Log.Msg($"{n} affordable of {ups.Length} permanent upgrades:\n{sb}");
+        }
+
+        /// <summary>Writes every node with all of the game's own checks to UserData/CanAfford_nodes.txt.</summary>
+        internal static void DumpNodes()
+        {
+            var nodes = UnityEngine.Object.FindObjectsByType<SkillNode>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+            var sb = new StringBuilder();
+            sb.AppendLine($"money={Money} nodes={nodes.Length}");
+            sb.AppendLine("id\tname\tprice\tbought\treqs\tReqMet\tIsLocked\tDemoLk\tLkDemo\tAvail\tVisible\talpha\tinter\tactive\tmark");
+            foreach (var n in nodes)
+            {
+                if (n == null) continue;
+                string Q(Func<object> f) { try { return Convert.ToString(f(), CultureInfo.InvariantCulture); } catch (Exception e) { return "ERR:" + e.GetType().Name; } }
+                var s = n.skill;
+                var reqs = new StringBuilder();
+                try
+                {
+                    var rl = n.requirements;
+                    if (rl != null)
+                        for (int i = 0; i < rl.Count; i++)
+                        {
+                            var r = rl[i];
+                            reqs.Append(r == null ? "null" : (int)r.skill.skillId + (r.skill.isPurchased ? "+" : "-")).Append(',');
+                        }
+                }
+                catch { reqs.Append("ERR"); }
+                var view = n.skillTreeView;
+                sb.Append(s != null ? (int)s.skillId : -1).Append('\t')
+                  .Append(s != null ? s.skillId.ToString() : "-").Append('\t')
+                  .Append(s != null ? s.price : 0).Append('\t')
+                  .Append(s != null && s.isPurchased).Append('\t')
+                  .Append(reqs).Append('\t')
+                  .Append(Q(() => n.AreRequirementsMet())).Append('\t')
+                  .Append(Q(() => n.IsLocked)).Append('\t')
+                  .Append(Q(() => n.IsDemoLocked)).Append('\t')
+                  .Append(Q(() => n.IsLockedForDemo())).Append('\t')
+                  .Append(view != null ? Q(() => view.IsNodeAvailable(n)) : "noview").Append('\t')
+                  .Append(view != null ? Q(() => view.IsNodeVisible(n)) : "noview").Append('\t')
+                  .Append(Q(() => n.canvasGroup != null ? n.canvasGroup.alpha.ToString("0.##", CultureInfo.InvariantCulture) : "-")).Append('\t')
+                  .Append(Q(() => n.canvasGroup != null && n.canvasGroup.interactable)).Append('\t')
+                  .Append(n.gameObject.activeInHierarchy).Append('\t')
+                  .Append(Q(() => CanAfford(n)))
+                  .AppendLine();
+            }
+            try
+            {
+                var tv = UnityEngine.Object.FindObjectOfType<SkillTreeView>();
+                if (tv != null)
+                    sb.AppendLine($"MasterKeyUnlocked={Q2(() => tv.IsMasterKeyUnlocked())} CanUnlockMasterKey={Q2(() => tv.CanUnlockMasterKey())} DemoLimit={Q2(() => tv.ReachedDemoLimit())}");
+            }
+            catch (Exception e) { sb.AppendLine("view: " + e.Message); }
+            File.WriteAllText(Path.Combine(MelonEnvironment.UserDataDirectory, "CanAfford_nodes.txt"), sb.ToString());
+            CanAffordMod.Log.Msg("Node table written");
+
+            static string Q2(Func<object> f) { try { return Convert.ToString(f()); } catch (Exception e) { return "ERR:" + e.GetType().Name; } }
         }
 
         /// <summary>Logs the GameObject hierarchy of one skill node (layout diagnostics).</summary>

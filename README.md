@@ -43,7 +43,7 @@ glance what you can afford – no more searching the whole tree.
 
 - not purchased yet,
 - all requirements purchased (the game's own check, `SkillNode.AreRequirementsMet`),
-- not locked for the demo,
+- not locked by the game (`SkillNode.IsLocked` / `IsDemoLocked`, `SkillTreeView.IsNodeAvailable`),
 - price ≤ your current money.
 
 The marking updates live when money changes or a skill is bought. Optional: affordable
@@ -126,8 +126,10 @@ Skip the copy with `-p:DeployToGame=false`.
 ## How it works
 
 - Harmony postfix on `SkillNode.Update` (only runs while the tree is open): checks
-  `skill.isPurchased`, `IsLockedForDemo()`, `AreRequirementsMet()` and
-  `skill.price <= MoneyManager.Instance.Money`.
+  `skill.isPurchased`, `IsLocked`, `IsDemoLocked`, `AreRequirementsMet()`,
+  `SkillTreeView.IsNodeAvailable()` and `skill.price <= MoneyManager.Instance.Money`.
+  (Not `IsLockedForDemo()`: it still reports the old demo limits and hid most skills ≥ $200K
+  before 1.5.3.)
 - Affordable: `SkillNode.background` is tinted, `SkillNode.icon` hidden and a
   `TextMeshProUGUI` child of the background shows the price (font taken from the game's own
   skill popup). Previous colors are remembered and put back unless the game set new ones itself
@@ -141,5 +143,15 @@ Skip the copy with `-p:DeployToGame=false`.
 
 Developer helper: create an empty file `UserData\CanAfford_dump.txt` while the game runs →
 the affordable list and one node's GameObject hierarchy are written to the log.
+`UserData\CanAfford_nodes_trigger.txt` → a table of every node with all lock checks is written
+to `UserData\CanAfford_nodes.txt`.
+
+## Changelog
+
+- **1.5.3** – Fix: expensive skills (most ≥ $200K, e.g. Chainsaw, Turret Damage, Vacuum 5/6)
+  were never marked although you could buy them. The mod used an old demo check; it now uses
+  the game's own lock state. Diamond nodes (weapon / machine unlocks) now get a normal-sized
+  price and their red border.
+- **1.5.2** – First public release.
 
 Tested with game build 26596503 (Unity 6000.2.15f1), MelonLoader 0.7.3.
