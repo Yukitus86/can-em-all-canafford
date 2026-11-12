@@ -1,0 +1,132 @@
+############################################################################
+#  STEAM GUIDE – CanAfford 1.5 (English)
+#  Lines starting with # are notes, do not copy them.
+#  [IMAGE: CA_xx.png] = insert that picture from this folder at this spot.
+############################################################################
+
+# ===== TITLE =====
+CanAfford – See Every Skill You Can Buy Right Now (Skill Tree Mod)
+
+# ===== DESCRIPTION =====
+Free MelonLoader mod: every skill you can afford right now lights up in the skill tree – neon green, red border and the price in the middle. Updates live when your money changes. No more searching the whole tree. Your save is never touched.
+
+# ===== GUIDE ICON =====
+# CA_00_guide_icon.png
+
+# ===== CATEGORY =====
+# Modding
+
+
+############################################################################
+# SECTION 1 – title:
+Overview
+############################################################################
+
+[IMAGE: CA_01_tree.png]
+
+[h1]What is this?[/h1]
+A small mod for [b]Can 'Em All[/b] that marks every skill you can buy [b]right now[/b] in the skill tree:
+[list]
+[*][b]Neon green[/b] node with a [b]red border[/b]
+[*]The [b]price[/b] in the middle instead of the icon – $850, $1,000, $25K, $1.5M
+[*]Gently pulsing, so you spot it even when zoomed out
+[*]Updates [b]live[/b] when your money changes or you buy a skill
+[/list]
+
+"Can buy right now" means: not bought yet, all required skills bought, and the price is not higher than your current money – exactly the game's own rules.
+
+[IMAGE: CA_02_comparison.png]
+
+[list]
+[*]Free and open source (MIT licence)
+[*]Only changes how the skill tree looks – [b]your save is never touched[/b]
+[*]Works with any savegame, turn it off anytime with [b]F7[/b]
+[/list]
+
+[i]Unofficial fan mod, not affiliated with LuisDev.[/i]
+
+
+############################################################################
+# SECTION 2 – title:
+Installation
+############################################################################
+
+[h1]1. Install MelonLoader (once)[/h1]
+CanAfford is a [b]MelonLoader[/b] mod – the standard open-source mod loader for Unity games.
+[olist]
+[*]Download [b]MelonLoader.Installer.exe[/b] from [url=https://github.com/LavaGang/MelonLoader/releases]github.com/LavaGang/MelonLoader/releases[/url] (version 0.7.3 or newer).
+[*]In Steam: right-click [b]Can 'Em All[/b] → [b]Manage[/b] → [b]Browse local files[/b]. That's your game folder.
+[*]Start the installer, select [b]Can 'Em All.exe[/b] from that folder and click [b]Install[/b].
+[*]Start the game once. A console window opens and MelonLoader sets itself up (takes about a minute). Then quit the game.
+[/olist]
+
+[h1]2. Install CanAfford[/h1]
+[olist]
+[*]Download [b]CanAfford-x.y.z.zip[/b] from the latest release:
+[url=https://github.com/Yukitus86/can-em-all-canafford/releases/latest]github.com/Yukitus86/can-em-all-canafford/releases/latest[/url]
+[*]Unzip it and copy [b]CanAfford.dll[/b] into the [b]Mods[/b] folder inside your game folder.
+[*]Start the game. The MelonLoader console shows [b]CanAfford loaded[/b].
+[/olist]
+
+[h2]Uninstall[/h2]
+Delete [b]Mods\CanAfford.dll[/b]. To remove MelonLoader completely, delete [b]version.dll[/b], [b]MelonLoader[/b], [b]Mods[/b], [b]Plugins[/b], [b]UserData[/b] and [b]UserLibs[/b] from the game folder.
+
+
+############################################################################
+# SECTION 3 – title:
+Keys & settings
+############################################################################
+
+[IMAGE: CA_03_closeup.png]
+
+[h1]Keys[/h1]
+[table]
+[tr][th]Key[/th][th]What it does[/th][/tr]
+[tr][td][b]F7[/b][/td][td]Marking on / off[/td][/tr]
+[tr][td][b]F8[/b][/td][td]Writes the list of affordable skills to the MelonLoader console[/td][/tr]
+[/table]
+
+[h1]Settings[/h1]
+After the first start you find them in [b]UserData\MelonPreferences.cfg[/b] in the game folder, section [b][CanAfford][/b]. Changes are applied [b]live[/b] while the game runs.
+[table]
+[tr][th]Setting[/th][th]Default[/th][th]Meaning[/th][/tr]
+[tr][td]FillColor[/td][td]#39FF14[/td][td]Node color[/td][/tr]
+[tr][td]ShowPrice[/td][td]true[/td][td]Price instead of the icon[/td][/tr]
+[tr][td]PriceColor[/td][td]#0B1A0B[/td][td]Price text color[/td][/tr]
+[tr][td]PriceSize[/td][td]0.62[/td][td]Price size relative to the node[/td][/tr]
+[tr][td]Border[/td][td]true[/td][td]Red border on/off[/td][/tr]
+[tr][td]BorderColor[/td][td]#FF1A1A[/td][td]Border color[/td][/tr]
+[tr][td]BorderSize[/td][td]0.08[/td][td]Border width[/td][/tr]
+[tr][td]Pulse[/td][td]true[/td][td]Gentle pulsing[/td][/tr]
+[tr][td]PermanentUpgrades[/td][td]true[/td][td]Also color affordable prestige upgrades[/td][/tr]
+[/table]
+
+
+############################################################################
+# SECTION 4 – title:
+FAQ & links
+############################################################################
+
+[h1]FAQ[/h1]
+
+[b]Nothing happens / no "CanAfford loaded" in the console.[/b]
+Check that MelonLoader is installed (a console window opens when the game starts) and that CanAfford.dll is directly in the [b]Mods[/b] folder, not in a subfolder.
+
+[b]Does it change my save or give me money?[/b]
+No. It only colors the skill tree. Nothing is written to your save.
+
+[b]A green node without a price?[/b]
+Then the game itself colors that branch green (bought skills). Affordable skills always show their price and the red border.
+
+[b]Does it work with the demo?[/b]
+It is made and tested for the full game.
+
+[b]The game was updated and the mod stopped working.[/b]
+Leave a comment or open an issue on GitHub – I'll update it.
+
+[h2]Links[/h2]
+[url=https://github.com/Yukitus86/can-em-all-canafford]Source code & download (GitHub)[/url]
+[url=https://steamcommunity.com/sharedfiles/filedetails/?id=3838055041]Can 'Em All Save Editor (my other tool)[/url]
+
+Found a bug or have an idea? Leave a comment below or open an issue on GitHub.
+If the guide helped you, a 👍 rating is appreciated. Happy canning!
