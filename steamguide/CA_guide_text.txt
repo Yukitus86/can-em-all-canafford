@@ -98,7 +98,6 @@ After the first start you find them in [b]UserData\MelonPreferences.cfg[/b] in t
 [tr][td]BorderColor[/td][td]#FF1A1A[/td][td]Border color[/td][/tr]
 [tr][td]BorderSize[/td][td]0.08[/td][td]Border width[/td][/tr]
 [tr][td]Pulse[/td][td]true[/td][td]Gentle pulsing[/td][/tr]
-[tr][td]PermanentUpgrades[/td][td]true[/td][td]Also color affordable prestige upgrades[/td][/tr]
 [/table]
 
 

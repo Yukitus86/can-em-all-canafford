@@ -12,7 +12,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
-[assembly: MelonInfo(typeof(CanAfford.CanAffordMod), "CanAfford", "1.5.3", "Yukitus")]
+[assembly: MelonInfo(typeof(CanAfford.CanAffordMod), "CanAfford", "1.5.4", "Yukitus")]
 [assembly: MelonGame("LuisDev", "Can 'Em All")]
 
 namespace CanAfford
@@ -22,7 +22,7 @@ namespace CanAfford
     /// (not purchased, requirements met by the game's own check, price &lt;= current money):
     /// node turns neon green, the icon is replaced by the price in black, gently pulsing.
     /// Everything lives on the node's own graphics, so zoom / pan / fade of the tree just work.
-    /// Permanent (prestige) upgrades: tinted with the same color (game's own CanPurchase).
+    /// Only the skill tree is marked (no prestige / permanent upgrades).
     /// </summary>
     public class CanAffordMod : MelonMod
     {
@@ -30,7 +30,6 @@ namespace CanAfford
 
         static MelonPreferences_Category _cat;
         internal static MelonPreferences_Entry<bool> Enabled;
-        internal static MelonPreferences_Entry<bool> PermanentEnabled;
         internal static MelonPreferences_Entry<string> Style;
         internal static MelonPreferences_Entry<string> FillColorHex;
         internal static MelonPreferences_Entry<bool> ShowPrice;
@@ -63,7 +62,6 @@ namespace CanAfford
             Log = LoggerInstance;
             _cat = MelonPreferences.CreateCategory("CanAfford");
             Enabled = _cat.CreateEntry("Enabled", true, description: "Mark skills you can afford right now (also F7)");
-            PermanentEnabled = _cat.CreateEntry("PermanentUpgrades", true, description: "Also mark affordable permanent (prestige) upgrades");
             Style = _cat.CreateEntry("Style", "Fill", description: "Fill = color the whole node, Outline = outline only, Both = fill + outline");
             FillColorHex = _cat.CreateEntry("FillColor", "#39FF14", description: "Node color (#RRGGBB)");
             ShowPrice = _cat.CreateEntry("ShowPrice", true, description: "Replace the icon of affordable skills by their price");
@@ -189,7 +187,7 @@ namespace CanAfford
 
         static readonly HashSet<string> _layoutLogged = new();
 
-        // key = native pointer of the SkillNode / PermanentUpgrade
+        // key = native pointer of the SkillNode
         static readonly Dictionary<IntPtr, Mark> Marks = new();
 
         static int _moneyFrame = -1;
@@ -243,9 +241,6 @@ namespace CanAfford
                 return true;
             }
         }
-
-        internal static bool CanAfford(PermanentUpgrade up) =>
-            up.skill != null && !up.IsPurchased && up.CanPurchase;
 
         /// <summary>0..1 smooth pulse shared by all nodes so they breathe in sync (1 = no pulse).</summary>
         static float PulseT() =>
@@ -523,18 +518,6 @@ namespace CanAfford
                   .Append(" $").Append(node.skill.price).AppendLine();
             }
             CanAffordMod.Log.Msg($"Money ${Money} - {n} affordable of {nodes.Length} skills:\n{sb}");
-
-            if (!CanAffordMod.PermanentEnabled.Value) return;
-            var ups = UnityEngine.Object.FindObjectsByType<PermanentUpgrade>(FindObjectsInactive.Include, FindObjectsSortMode.None);
-            sb.Clear(); n = 0;
-            foreach (var up in ups)
-            {
-                if (up == null || !CanAfford(up)) continue;
-                n++;
-                sb.Append("  ").Append((int)up.skill.skillId).Append(' ').Append(up.skill.skillId.ToString())
-                  .Append(" price ").Append(up.skill.price).AppendLine();
-            }
-            CanAffordMod.Log.Msg($"{n} affordable of {ups.Length} permanent upgrades:\n{sb}");
         }
 
         /// <summary>Writes every node with all of the game's own checks to UserData/CanAfford_nodes.txt.</summary>
@@ -643,28 +626,6 @@ namespace CanAfford
                 if (_logged) return;
                 _logged = true;
                 CanAffordMod.Log.Error("SkillNode marking failed: " + e);
-            }
-        }
-    }
-
-    [HarmonyPatch(typeof(PermanentUpgrade), nameof(PermanentUpgrade.Update))]
-    internal static class PermanentUpgradeUpdatePatch
-    {
-        static bool _logged;
-
-        static void Postfix(PermanentUpgrade __instance)
-        {
-            try
-            {
-                bool on = CanAffordMod.Enabled.Value && CanAffordMod.PermanentEnabled.Value && Highlighter.CanAfford(__instance);
-                // permanent cards already show their price -> color only, no price label
-                Highlighter.Apply(__instance, __instance.background, __instance.icon, 0, on, allowLabel: false);
-            }
-            catch (Exception e)
-            {
-                if (_logged) return;
-                _logged = true;
-                CanAffordMod.Log.Error("PermanentUpgrade marking failed: " + e);
             }
         }
     }

@@ -39,7 +39,6 @@ After the first start: [b]UserData\MelonPreferences.cfg[/b] in the game folder, 
 [*][b]FillColor[/b] (#39FF14), [b]PriceColor[/b] (#0B1A0B), [b]BorderColor[/b] (#FF1A1A)
 [*][b]ShowPrice[/b], [b]Border[/b], [b]Pulse[/b] – on/off
 [*][b]PriceSize[/b] (0.62), [b]BorderSize[/b] (0.08)
-[*][b]PermanentUpgrades[/b] – also color affordable prestige upgrades
 [/list]
 
 [size=4][b]AI disclosure[/b][/size]

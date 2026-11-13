@@ -46,9 +46,8 @@ glance what you can afford – no more searching the whole tree.
 - not locked by the game (`SkillNode.IsLocked` / `IsDemoLocked`, `SkillTreeView.IsNodeAvailable`),
 - price ≤ your current money.
 
-The marking updates live when money changes or a skill is bought. Optional: affordable
-permanent prestige upgrades (upgrade points instead of money, the game's own
-`PermanentUpgrade.CanPurchase`) get the same color.
+The marking updates live when money changes or a skill is bought. Only the skill tree is
+marked – prestige / permanent upgrades and all other screens stay untouched.
 
 Everything is drawn on the node's own graphics (background color + a price text inside it), so
 it zooms, pans and fades together with the tree. The game's look is restored as soon as a skill
@@ -76,7 +75,7 @@ Uninstall: delete `Mods\CanAfford.dll`. To remove MelonLoader completely delete
 | Key | Action |
 |-----|--------|
 | **F7** | Marking on / off |
-| **F8** | Write the list of affordable skills (+ permanent upgrades) to the MelonLoader console/log |
+| **F8** | Write the list of affordable skills to the MelonLoader console/log |
 
 ## Settings
 
@@ -86,7 +85,6 @@ Changes are picked up **live** while the game runs (within a second).
 | Setting | Default | Meaning |
 |---------|---------|---------|
 | `Enabled` | `true` | Marking on/off (also toggled with F7) |
-| `PermanentUpgrades` | `true` | Also color affordable permanent upgrades |
 | `Style` | `"Fill"` | `Fill` = whole node colored, `Outline` = outline only, `Both` |
 | `FillColor` | `"#39FF14"` | Node color |
 | `ShowPrice` | `true` | Show the price instead of the icon |
@@ -135,7 +133,6 @@ Skip the copy with `-p:DeployToGame=false`.
   skill popup). Previous colors are remembered and put back unless the game set new ones itself
   (e.g. its "purchased" color).
 - Requirements: all listed requirements must be purchased (verified against the save data).
-- Harmony postfix on `PermanentUpgrade.Update`: color only, with `!IsPurchased && CanPurchase`.
 - If a game update renames these, the mod logs one error and does nothing else.
 
 - Border: a copy of the node's own fill shape (circle / diamond), red and slightly bigger,
@@ -148,6 +145,8 @@ to `UserData\CanAfford_nodes.txt`.
 
 ## Changelog
 
+- **1.5.4** – Only the skill tree is marked. Prestige / permanent upgrades are no longer
+  colored (setting `PermanentUpgrades` removed).
 - **1.5.3** – Fix: expensive skills (most ≥ $200K, e.g. Chainsaw, Turret Damage, Vacuum 5/6)
   were never marked although you could buy them. The mod used an old demo check; it now uses
   the game's own lock state. Diamond nodes (weapon / machine unlocks) now get a normal-sized
